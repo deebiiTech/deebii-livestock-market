@@ -51,9 +51,9 @@
     </script>
 
     <div id="info-modal" class="fixed inset-0 z-[110] modal-bg hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto p-6 md:p-10 relative">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 font-bold text-2xl">✕</button>
-            <div id="modal-content" class="prose prose-blue max-w-none"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative">
+            <button onclick="closeModal()" class="absolute top-4 right-6 text-gray-400 hover:text-red-500 font-bold text-3xl z-10">✕</button>
+            <div id="modal-content" class="p-0"></div>
         </div>
     </div>
 
@@ -83,13 +83,13 @@
                     <div class="bg-white rounded p-1 shadow-sm">
                         <img src="Logo.PNG" alt="Logo" class="h-10 w-auto object-contain">
                     </div>
-                    <h1 class="text-lg md:text-xl font-bold tracking-tight uppercase italic">Deebii Livestock</h1>
+                    <h1 class="text-lg md:text-xl font-bold tracking-tight uppercase italic">Deebii Livestock Market</h1>
                 </div>
 
-                <nav class="flex gap-4 text-[11px] md:text-xs font-bold uppercase tracking-widest border-b md:border-b-0 border-blue-800 pb-2 md:pb-0">
-                    <button onclick="showAbout()" class="hover:text-yellow-400 transition">About</button>
-                    <button onclick="showHelp()" class="hover:text-yellow-400 transition">Help</button>
-                    <button onclick="showPrivacy()" class="hover:text-yellow-400 transition">Privacy</button>
+                <nav class="flex gap-6 text-[11px] md:text-xs font-bold uppercase tracking-widest border-b md:border-b-0 border-blue-800 pb-2 md:pb-0">
+                    <button onclick="showAbout()" class="hover:text-yellow-400 transition flex items-center gap-1"><i class="fa fa-info-circle"></i> About</button>
+                    <button onclick="showHelp()" class="hover:text-yellow-400 transition flex items-center gap-1"><i class="fa fa-question-circle"></i> Help</button>
+                    <button onclick="showPrivacy()" class="hover:text-yellow-400 transition flex items-center gap-1"><i class="fa fa-shield-alt"></i> Privacy</button>
                 </nav>
 
                 <div class="flex gap-3 items-center">
@@ -136,7 +136,7 @@
                     </div>
                     <div>
                         <p class="text-xl font-bold text-yellow-400 tracking-tight">Kajela Hambisa</p>
-                        <p class="text-sm text-gray-300 italic">Market Specialist & Developer</p>
+                        <p class="text-sm text-gray-300 italic">Software Developer, Author, Graphic Designer & Market Specialist</p>
                         <p class="text-xs text-yellow-200 mt-1 font-mono">📞 0910166955</p>
                     </div>
                 </div>
@@ -211,31 +211,117 @@
         function closeModal() { document.getElementById('info-modal').classList.add('hidden'); }
 
         function showAbout() {
-            const content = `<div class="space-y-6">
-                <section>
-                    <h2 class="text-3xl font-black text-blue-900 border-b-2 border-yellow-500 pb-2">DEEBII LIVESTOCK</h2>
-                    <div class="grid md:grid-cols-2 gap-8 mt-6 text-sm">
+            const content = `
+                <div class="bg-gradient-to-br from-indigo-900 to-blue-800 text-white p-10">
+                    <h2 class="text-4xl font-black mb-4 flex items-center gap-3">
+                        <i class="fa fa-info-circle text-yellow-400"></i> About Deebii Market
+                    </h2>
+                    <p class="text-blue-100 text-lg italic">"Connecting Borana Pastoralists to Fair Market Intelligence."</p>
+                </div>
+                <div class="p-10 space-y-8">
+                    <section class="grid md:grid-cols-2 gap-8">
                         <div>
-                            <h3 class="font-bold text-lg text-blue-800">📌 About System (Afaan Oromoo)</h3>
-                            <p class="text-gray-600 leading-relaxed mt-2 italic font-semibold">"Systemiin kun daldala beeyladaa ammayyeessuuf kan qophaaye dha."</p>
+                            <h3 class="text-xl font-bold text-blue-900 mb-3 border-b-2 border-yellow-500 inline-block">Maaliif Deebii? (Why Deebii?)</h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                <strong>Deebii Market</strong> systemii ragaa gabaa beeyladaa battalatti (real-time) wal-qunnamsiisu yoo ta'u, 
+                                daldala beeyladaa Booranaa ammayyeessuuf kan qophaaye dha. Systemiin kun dallaala gidduudhaa balleessuun 
+                                horsiise bulaan gatii haqaa akka argatu gargaara.
+                            </p>
                         </div>
                         <div>
-                            <h3 class="font-bold text-lg text-blue-800">📌 About System (English)</h3>
-                            <p class="text-gray-600 leading-relaxed mt-2">DEEBII is a specialized platform for livestock market data in Borana Zone.</p>
+                            <h3 class="text-xl font-bold text-blue-900 mb-3 border-b-2 border-yellow-500 inline-block">Who Built It?</h3>
+                            <p class="text-gray-600 leading-relaxed">
+                                Systemiin kun kan ijaarame <strong>Kajela Hambisa</strong>, Software Developer fi Market Specialist, 
+                                dhaan yoo ta'u, kaayyoon isaa teeknoolojii fayyadamuun jireenya hawaasaa fooyyeessuu dha.
+                            </p>
                         </div>
-                    </div>
-                </section>
-            </div>`;
+                    </section>
+                    <section class="bg-gray-50 p-6 rounded-2xl border-l-8 border-indigo-700">
+                        <h3 class="text-lg font-bold text-indigo-900 mb-4 uppercase tracking-wider">Faayidaa Systemichaa (Key Benefits):</h3>
+                        <ul class="grid md:grid-cols-2 gap-4">
+                            <li class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm border border-gray-100 font-medium">
+                                <i class="fa fa-check-circle text-green-500"></i> Iftoomina Gabaa (Transparency)
+                            </li>
+                            <li class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm border border-gray-100 font-medium">
+                                <i class="fa fa-check-circle text-green-500"></i> Dhiibbaa Dallaalaa Hir'isuu
+                            </li>
+                            <li class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm border border-gray-100 font-medium">
+                                <i class="fa fa-check-circle text-green-500"></i> Ragaa Gatii Battalaa (Real-time Data)
+                            </li>
+                            <li class="flex items-center gap-3 bg-white p-3 rounded-lg shadow-sm border border-gray-100 font-medium">
+                                <i class="fa fa-check-circle text-green-500"></i> Murtii Ragaa Irratti Hundaa'e
+                            </li>
+                        </ul>
+                    </section>
+                </div>`;
             openModal(content);
         }
 
         function showHelp() {
-            const content = `<h2 class="text-2xl font-bold">Help Center</h2><p class="mt-4">Select a Woreda to see market prices. Admins must login to edit.</p>`;
+            const content = `
+                <div class="bg-gradient-to-br from-yellow-500 to-orange-400 text-white p-10">
+                    <h2 class="text-4xl font-black mb-4 flex items-center gap-3">
+                        <i class="fa fa-question-circle"></i> Help & Usage Guide
+                    </h2>
+                    <p class="text-yellow-100 text-lg">Systemii kana akkamiin fayyadamna?</p>
+                </div>
+                <div class="p-10">
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="p-6 bg-white border-t-4 border-blue-900 rounded-xl shadow-md">
+                            <div class="text-3xl mb-4">🔍</div>
+                            <h4 class="font-bold mb-2">1. Gatii Ilaaluuf</h4>
+                            <p class="text-xs text-gray-500">Gara bitaa (Sidebar) irraa aanaa kee filadhu. Battaluma sana gatii beeyladaa aanaa sanaa ni argita.</p>
+                        </div>
+                        <div class="p-6 bg-white border-t-4 border-blue-900 rounded-xl shadow-md">
+                            <div class="text-3xl mb-4">⚙️</div>
+                            <h4 class="font-bold mb-2">2. Filter Gochuuf</h4>
+                            <p class="text-xs text-gray-500">Filter beeyladaa (Loon, Hoolaa, etc) gubbaa jiruun beeylada barbaadde qofa adda baasii ilaali.</p>
+                        </div>
+                        <div class="p-6 bg-white border-t-4 border-blue-900 rounded-xl shadow-md">
+                            <div class="text-3xl mb-4">🔐</div>
+                            <h4 class="font-bold mb-2">3. Admin Login</h4>
+                            <p class="text-xs text-gray-500">Data Clerks-onni qofti username fi password isaaniin seenanii gatii jijjiiruu danda'u.</p>
+                        </div>
+                    </div>
+                    <div class="mt-10 p-4 bg-yellow-50 rounded-lg border border-yellow-200 text-sm italic text-gray-700">
+                        <strong>Hubachiisa:</strong> Gatiin gabaa guyyaa guyyaan (Daily) saa'atii 10:00 AM irratti klerk-otaan update ta'a.
+                    </div>
+                </div>`;
             openModal(content);
         }
 
         function showPrivacy() {
-            const content = `<h2 class="text-2xl font-bold">Privacy Policy</h2><p class="mt-4">Data is used for market transparency only.</p>`;
+            const content = `
+                <div class="bg-gradient-to-br from-green-800 to-teal-700 text-white p-10">
+                    <h2 class="text-4xl font-black mb-4 flex items-center gap-3">
+                        <i class="fa fa-shield-alt"></i> Privacy & Data Policy
+                    </h2>
+                    <p class="text-green-100 text-lg">Eegumsa ragaa fi itti gaafatamummaa.</p>
+                </div>
+                <div class="p-10 space-y-8">
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="bg-gray-50 p-6 rounded-2xl">
+                            <h4 class="font-bold text-green-900 mb-3 underline">👨‍💻 Hojii Admin (Master)</h4>
+                            <ul class="text-xs space-y-2 text-gray-600">
+                                <li>• Systemicha hordofuu fi bifa isaa jijjiiruu.</li>
+                                <li>• User Accounts (Clerks) qopheessuu.</li>
+                                <li>• Aanaalee hunda irratti mirga 'Edit' qaba.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-gray-50 p-6 rounded-2xl border-r-4 border-green-600">
+                            <h4 class="font-bold text-green-900 mb-3 underline">📝 Mirga & Dirqama Data Clerk</h4>
+                            <ul class="text-xs space-y-2 text-gray-600">
+                                <li>• <strong>Mirga:</strong> Aanaa ramadaman irratti ragaa galchuu fi sirreessuu.</li>
+                                <li>• <strong>Dirqama:</strong> Gatii sobaa (Fake price) galchuun dhorkaa dha.</li>
+                                <li>• <strong>Dirqama:</strong> Guyyaa gabaa hundaa saa'atii itti ajajaman irratti ragaa galchuu.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="p-6 bg-white shadow-inner border rounded-xl">
+                        <h4 class="font-bold text-blue-900 mb-2">Public View (Hawaasaaf):</h4>
+                        <p class="text-xs text-gray-600">Hawaasni ragaa 'Live' ta'e qofa dubbisuu (Read-only) danda'a. Namni kamiyyuu Login malee ragaa jijjiiruu hin danda'u. Ragaan systemii kanaan argamu hundi nageenya dinagdee horsiise bulaaf qofa oola.</p>
+                    </div>
+                </div>`;
             openModal(content);
         }
 
@@ -345,3 +431,4 @@
     </script>
 </body>
 </html>
+
