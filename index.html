@@ -12,6 +12,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root { --deebii-blue: #1a237e; --footer-brown: #5d4037; }
@@ -58,6 +59,9 @@
         window.dbRef = ref;
         window.dbSet = set;
         window.dbOnValue = onValue;
+        
+        // Initialize App after Firebase loads
+        initApp();
     </script>
 
     <div id="info-modal" class="fixed inset-0 z-[110] modal-bg hidden flex items-center justify-center p-4">
@@ -146,8 +150,8 @@
                     </div>
                 </div>
 
-                <div class="mb-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div id="analysis-box" class="bg-blue-900 text-white p-6 rounded-2xl shadow-lg border-l-8 border-yellow-500">
+                <div class="mb-8 grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    <div id="analysis-box" class="bg-blue-900 text-white p-6 rounded-2xl shadow-lg border-l-8 border-yellow-500 h-full">
                         <div class="flex justify-between items-center mb-4">
                             <h4 class="text-sm font-black uppercase tracking-widest opacity-80">Xiinxala Gabaa (Market Analysis)</h4>
                             <button id="edit-analysis-btn" onclick="updateAnalysis()" class="hidden bg-white/10 hover:bg-white/30 px-3 py-1.5 rounded-lg text-[10px] font-bold border border-white/20 transition">
@@ -169,6 +173,13 @@
                                 <p id="ana-trend" class="font-bold text-yellow-400 text-sm">Dhaabbataa</p>
                             </button>
                         </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 h-full">
+                         <h4 class="text-sm font-black text-gray-400 uppercase tracking-widest mb-4">Gatiiwwan Kalleetti (Price Graph)</h4>
+                         <div class="relative h-48 w-full">
+                             <canvas id="marketChart"></canvas>
+                         </div>
                     </div>
                 </div>
 
@@ -207,6 +218,7 @@
     <script>
         let currentUser = null;
         let currentExcelData = [];
+        let myChart = null; // Global chart instance
 
         const users = {
             "admin_master": {pass: "admin@2026", role: "admin", woreda: "All"},
@@ -320,6 +332,30 @@
             setTimeout(() => filterMarket(), 1000);
         }
 
+        function updateGraph(labels, data) {
+            const ctx = document.getElementById('marketChart').getContext('2d');
+            if (myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Gatii Giddu-galeessaa (AVG Price)',
+                        data: data,
+                        backgroundColor: '#1a237e',
+                        borderRadius: 10,
+                        barThickness: 20
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true } },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+
         function filterMarket() {
             if (!window.dbOnValue) return;
             const filter = document.getElementById('beeylada-filter').value;
@@ -335,12 +371,14 @@
                 document.getElementById('ana-trend').innerText = a.trend;
             });
 
-            // Sync Market Cards
+            // Sync Market Cards & Graph
             const dataRef = window.dbRef(window.db, 'markets/' + woredaKey);
             window.dbOnValue(dataRef, (snapshot) => {
                 const liveData = snapshot.val() || {};
                 grid.innerHTML = '';
                 currentExcelData = [];
+                let graphLabels = [];
+                let graphValues = [];
 
                 marketDataTemplate.forEach(item => {
                     if (filter !== 'All' && item.category !== filter) return;
@@ -348,6 +386,12 @@
                     const prices = liveData[subKey] || { min: 0, mid: 0, max: 0 };
                     const canEdit = currentUser && (currentUser.role === 'admin' || currentUser.woreda === activeWoreda);
                     const imgName = categoryIcons[item.category] || 'Logo.PNG';
+
+                    // Prepare Graph Data (Only top items to keep it clean)
+                    if(prices.mid > 0 && graphLabels.length < 10) {
+                        graphLabels.push(item.sub);
+                        graphValues.push(prices.mid);
+                    }
 
                     currentExcelData.push({
                         "Aanaa": activeWoreda, "Category": item.category, "Sub": item.sub,
@@ -382,6 +426,7 @@
                             </div>
                         </div>`;
                 });
+                updateGraph(graphLabels, graphValues);
             });
         }
 
@@ -401,56 +446,51 @@
             }
         }
 
-        window.quickUpdate = function(type) {
+        window.updateData = function(sub) {
             const activeWoreda = document.getElementById('current-location').innerText;
             if (!currentUser || (currentUser.role !== 'admin' && currentUser.woreda !== activeWoreda)) {
-                return; // Only alert in full edit
+                alert("Aanaa kee qofarratti gatii jijjiiruu dandeessa!"); return;
             }
             const woredaKey = activeWoreda.replace(/\s+/g, '_');
-            const currentVal = document.getElementById(`ana-${type}`).innerText;
-            const newVal = prompt(`Update ${type.toUpperCase()}:`, currentVal);
+            const subKey = sub.replace(/[\/\.]/g, '_');
             
+            const min = parseInt(prompt(`Gatii Xiqqaa (Min) ${sub}:`, 0));
+            const mid = parseInt(prompt(`Gatii Giddu-galeessaa (AVG) ${sub}:`, 0));
+            const max = parseInt(prompt(`Gatii Guddaa (Max) ${sub}:`, 0));
+
+            if (!isNaN(min) && !isNaN(mid) && !isNaN(max)) {
+                window.dbSet(window.dbRef(window.db, `markets/${woredaKey}/${subKey}`), { min, mid, max })
+                .then(() => alert("Gatiin milkaa'inaan jijjiirameera!"));
+            }
+        };
+
+        window.quickUpdate = function(type) {
+            const activeWoreda = document.getElementById('current-location').innerText;
+            if (!currentUser || (currentUser.role !== 'admin' && currentUser.woreda !== activeWoreda)) return;
+            const woredaKey = activeWoreda.replace(/\s+/g, '_');
+            const newVal = prompt(`Update ${type.toUpperCase()}:`, document.getElementById(`ana-${type}`).innerText);
             if(newVal) {
-                const dataRef = window.dbRef(window.db, 'analysis/' + woredaKey);
-                window.dbOnValue(dataRef, (snap) => {
-                    const data = snap.val() || { supply: "Olaana", demand: "Giddu-galeessa", trend: "Dhaabbataa" };
-                    data[type] = newVal;
-                    window.dbSet(window.dbRef(window.db, 'analysis/' + woredaKey), data);
-                }, { onlyOnce: true });
+                const currentData = {
+                    supply: document.getElementById('ana-supply').innerText,
+                    demand: document.getElementById('ana-demand').innerText,
+                    trend: document.getElementById('ana-trend').innerText
+                };
+                currentData[type] = newVal;
+                window.dbSet(window.dbRef(window.db, 'analysis/' + woredaKey), currentData);
             }
         }
 
         window.exportToExcel = function() {
-            if (currentExcelData.length === 0) { alert("Ragaan download ta'u hin jiru!"); return; }
+            if(currentExcelData.length === 0) return alert("Data-n hin jiru!");
             const ws = XLSX.utils.json_to_sheet(currentExcelData);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Gabaa_Data");
-            const activeWoreda = document.getElementById('current-location').innerText;
-            XLSX.writeFile(wb, `Deebii_Market_${activeWoreda}_${new Date().toLocaleDateString()}.xlsx`);
-        };
-
-        function updateData(sub) {
-            const activeWoreda = document.getElementById('current-location').innerText;
-            if (!currentUser) { alert("Dhiifama! Admin Login godhuu qabda."); return; }
-            if (currentUser.role === 'admin' || currentUser.woreda === activeWoreda) {
-                const nMin = prompt(`${sub} - Gatii Xiqqaa:`, 0);
-                const nMid = prompt(`${sub} - Gatii Giddu-galeessaa:`, 0);
-                const nMax = prompt(`${sub} - Gatii Guddaa:`, 0);
-                if(nMin !== null && nMid !== null && nMax !== null) {
-                    const woredaKey = activeWoreda.replace(/\s+/g, '_');
-                    const subKey = sub.replace(/[\/\.]/g, '_');
-                    window.dbSet(window.dbRef(window.db, `markets/${woredaKey}/${subKey}`), {
-                        min: Number(nMin), mid: Number(nMid), max: Number(nMax)
-                    }).then(() => alert("Ragaan Live ta'ee jira!"));
-                }
-            } else {
-                alert(`Hayyama hin qabdu! Aanaan kee: ${currentUser.woreda}`);
-            }
+            XLSX.utils.book_append_sheet(wb, ws, "MarketData");
+            XLSX.writeFile(wb, `Deebii_Market_${document.getElementById('current-location').innerText}.xlsx`);
         }
-        initApp();
     </script>
 </body>
 </html>
+
 
 
 
